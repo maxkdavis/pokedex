@@ -2,7 +2,7 @@ const MAX_POKEMON = 151;
 const listWrapper = document.querySelector('.list-wrapper'); //<div> where all our pokemon list items will exist
 const searchInput = document.querySelector('#search-input');
 const numberFilter = document.querySelector('#number');
-const nameFilter = document.querySelector('#name');
+const nameFilter = document.getElementById('name');
 const notFoundMessage = document.querySelector('#not-found-message');
 
 let allPokemons = []; // this is where we'll store data for each pokemon that comes from our API
@@ -11,6 +11,7 @@ fetch(`https://pokeapi.co/api/v2/pokemon?limit=${MAX_POKEMON}`)
   .then((res) => res.json())
   .then((data) => {
     allPokemons = data.results;
+    // console.log(data.results[0].name);
     displayPokemons(allPokemons);
   });
 
@@ -24,6 +25,7 @@ async function fetchPokemonDataBeforeRedirect(id) {
     return true;
   } catch (error) {
     console.error('Failed to fetch Pokemon data before redirect');
+    return false;
   }
 }
 
@@ -42,7 +44,7 @@ function displayPokemons(pokemon) {
          <img src="https://raw.githubusercontent.com/pokeapi/sprites/master/sprites/pokemon/other/dream-world/${pokemonID}.svg" alt="${pokemon.name}" />
       </div>
         <div class="name-wrap">
-         <p class="body3-fonts">#${pokemon.name}</p>
+         <p class="body3-fonts">${pokemon.name}</p>
       </div>
     `;
     //if user clicks on an individual pokemon (the list item), redirect them to this other, details.html, page
@@ -59,4 +61,29 @@ function displayPokemons(pokemon) {
 
 searchInput.addEventListener('keyup', handleSearch);
 
-function handleSearch() {}
+function handleSearch() {
+  const searchTerm = searchInput.value.toLowerCase();
+  let filteredPokemons;
+
+  if (numberFilter.checked) {
+    filteredPokemons = allPokemons.filter((pokemon) => {
+      const pokemonID = pokemon.url.split('/')[6];
+      return pokemonID.startsWith(searchTerm);
+    });
+  } else if (nameFilter.checked) {
+    filteredPokemons = allPokemons.filter((pokemon) => {
+      const pokeName = pokemon.name.toLowerCase();
+      return pokeName.startsWith(searchTerm);
+    });
+  } else {
+    filteredPokemons = allPokemons;
+  }
+
+  displayPokemons(filteredPokemons);
+
+  if (filteredPokemons.length === 0) {
+    notFoundMessage.style.display = 'block';
+  } else {
+    notFoundMessage.style.display = 'none';
+  }
+}
