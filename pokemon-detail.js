@@ -34,7 +34,20 @@ async function loadPokemon(id) {
 
       leftArrow.removeEventListener('click', navigatePokemon);
       rightArrow.removeEventListener('click', navigatePokemon);
+
+      if (id !== 1) {
+        leftArrow.addEventListener('click', () => {
+          navigatePokemon(id - 1);
+        });
+      }
+      if (id !== 151) {
+        rightArrow.addEventListener('click', () => {
+          navigatePokemon(id + 1);
+        });
+      }
     }
+
+    window.history.pushState({}, '', `./detail.html?id=${id}`);
 
     return true;
   } catch (error) {
@@ -42,3 +55,26 @@ async function loadPokemon(id) {
     return false;
   }
 }
+
+async function navigatePokemon(id) {
+  currentPokemonId = id;
+  await loadPokemon(id);
+}
+
+const typeColors = {
+  normal: '#A8A878',
+  fire: '#f08030',
+  water: '#6890f0',
+  electric: '#f8d030',
+  grass: '#78C850',
+  ice: '#98d8d8',
+  fighting: '#c03028',
+  poison: '#a040a0',
+  ground: '#e0c068',
+  flying: '#a890f0',
+  psychic: '#f85888',
+  bug: '#a8b820',
+  rock: '#b8a038',
+  ghost: '#705898',
+  dragon: '#7038f8',
+};
